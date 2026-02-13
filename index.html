@@ -85,11 +85,9 @@
         0% {
           transform: translate(0, 0) rotate(0deg);
         }
-
         50% {
           transform: translate(20px, 40px) rotate(180deg);
         }
-
         100% {
           transform: translate(0, 0) rotate(360deg);
         }
@@ -145,52 +143,6 @@
         color: var(--primary-color);
       }
 
-      /* Hidden Hearts */
-      .heart-target {
-        position: absolute;
-        font-size: 2.5rem;
-        color: #d62828;
-        /* Slightly darker to blend but identifiable if looked for */
-        cursor: pointer;
-        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        opacity: 0.8;
-        filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.3));
-        animation: pulse-soft 3s infinite;
-      }
-
-      .heart-target:hover {
-        transform: scale(1.2);
-        color: #ff0000;
-      }
-
-      /* Random positions for hearts (will be set by JS mostly, but examples here) */
-
-      @keyframes pulse-soft {
-        0% {
-          transform: scale(1);
-        }
-
-        50% {
-          transform: scale(1.05);
-        }
-
-        100% {
-          transform: scale(1);
-        }
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(-20px);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
       /* Envelope Stage */
       #envelope-stage {
         display: none;
@@ -217,7 +169,6 @@
         cursor: pointer;
         transition: transform 0.5s ease;
       }
-
       .envelope-container:hover {
         transform: scale(1.05);
       }
@@ -245,7 +196,6 @@
         border-left: 150px solid transparent;
         border-right: 150px solid transparent;
         border-top: 110px solid #ff758f;
-        /* Lighter shade */
         transform-origin: top;
         transition:
           transform 0.6s ease 0.5s,
@@ -295,17 +245,14 @@
         transition: opacity 0.5s ease;
       }
 
-      /* Open state for envelope */
       .envelope-container.open .flap {
         transform: rotateX(180deg);
         z-index: 1;
       }
-
       .envelope-container.open .seal {
         opacity: 0;
         pointer-events: none;
       }
-
       .envelope-container.open .letter-preview {
         transform: translateY(-100px);
         z-index: 4;
@@ -326,13 +273,7 @@
         font-family: "Poppins", sans-serif;
       }
 
-      .open-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(255, 77, 109, 0.6);
-        background: #fff0f3;
-      }
-
-      /* Full Letter View */
+      /* RESPONSIVE LETTER VIEW START */
       #letter-view {
         position: fixed;
         top: 0;
@@ -341,12 +282,13 @@
         height: 100%;
         background: rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(5px);
-        z-index: 50;
+        z-index: 100;
         display: none;
         justify-content: center;
         align-items: center;
         opacity: 0;
         transition: opacity 0.5s ease;
+        padding: 20px; /* Added padding for mobile screen edges */
       }
 
       #letter-view.active {
@@ -356,10 +298,12 @@
 
       .love-letter {
         background: #fff;
-        width: 90%;
+        width: 95%; /* Responsive width */
         max-width: 600px;
-        padding: 3rem;
-        border-radius: 5px;
+        max-height: 85vh; /* Prevents overflow on short screens */
+        overflow-y: auto; /* Adds scroll if content is too long */
+        padding: 3rem 2rem; /* Adjusted padding */
+        border-radius: 10px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         position: relative;
         background-image: repeating-linear-gradient(
@@ -378,19 +322,32 @@
 
       .love-letter h2 {
         font-family: "Dancing Script", cursive;
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         color: var(--primary-color);
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
       }
 
       .love-letter p {
         font-family: "Dancing Script", cursive;
-        font-size: 1.6rem;
+        font-size: 1.4rem;
         color: #333;
-        margin-bottom: 1.5rem;
-        line-height: 1.6;
+        margin-bottom: 1.2rem;
+        line-height: 1.5;
       }
+
+      @media (max-width: 480px) {
+        .love-letter {
+          padding: 2.5rem 1.2rem;
+        }
+        .love-letter h2 {
+          font-size: 1.8rem;
+        }
+        .love-letter p {
+          font-size: 1.2rem;
+        }
+      }
+      /* RESPONSIVE LETTER VIEW END */
 
       .close-btn {
         position: absolute;
@@ -401,104 +358,10 @@
         color: #aaa;
         background: none;
         border: none;
+        z-index: 101;
       }
 
-      .close-btn:hover {
-        color: #333;
-      }
-
-      /* Sparkle animation for finding heart */
-      .sparkle {
-        position: absolute;
-        pointer-events: none;
-        animation: sparkleAnim 0.8s ease-out forwards;
-        font-size: 20px;
-        color: gold;
-      }
-
-      @keyframes sparkleAnim {
-        0% {
-          transform: scale(0) rotate(0deg);
-          opacity: 1;
-        }
-
-        100% {
-          transform: scale(2) rotate(180deg);
-          opacity: 0;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <!-- Background Shapes -->
-    <div class="bg-shapes">
-      <div class="shape"></div>
-      <div class="shape"></div>
-      <div class="shape"></div>
-    </div>
-
-    <!-- Game Stage -->
-    <div id="game-stage">
-      <div class="instructions">
-        <h1>Find My Heart</h1>
-        <p>
-          I've hidden 3 hearts inside these gifts and surprises.<br />Click them
-          to find where my heart lies!
-        </p>
-        <div class="score-board">
-          Hearts Found: <span id="counter">0</span>/3
-        </div>
-      </div>
-
-      <!-- Hiding Spots Container -->
-      <div class="hiding-spots-container">
-        <!-- Generated by JS -->
-      </div>
-    </div>
-
-    <!-- Envelope Stage -->
-    <div id="envelope-stage">
-      <div class="envelope-container" id="envelope">
-        <div class="envelope">
-          <div class="pocket"></div>
-          <!-- The letter inside -->
-          <div class="letter-preview"></div>
-          <div class="flap"></div>
-          <div class="seal">❤️</div>
-        </div>
-      </div>
-      <button class="open-btn" onclick="openEnvelope()">Open Me</button>
-    </div>
-
-    <!-- Full Letter View -->
-
-    <div id="letter-view">
-      <div class="love-letter">
-        <button class="close-btn" onclick="closeLetter()">×</button>
-        <h2>To My Beautiful Woman of God,</h2>
-
-        <p>
-          I thank Jesus every day for bringing you into my life. You are a
-          blessing I don't deserve, and a treasure I promise to always protect.
-        </p>
-
-        <p style="font-style: italic; color: #d63384">
-          "Let all that you do be done in love." — 1 Corinthians 16:14
-        </p>
-
-        <p>
-          I am here for you always—to lead us in faith, to cherish your heart,
-          and to love you just as Christ loves us. You are my greatest
-          adventure.
-        </p>
-
-        <p>Happy Valentine's Day! ❤️</p>
-        <p style="text-align: right">— Yours forever in Christ,</p>
-      </div>
-    </div>
-    <style>
-      /* Additional Styles for Hiding Spots */
+      /* Rest of your existing Styles */
       .hiding-spots-container {
         display: flex;
         flex-wrap: wrap;
@@ -507,34 +370,43 @@
         max-width: 800px;
         padding: 20px;
         z-index: 15;
-        perspective: 1000px;
       }
 
       .hiding-spot {
         font-size: 3.5rem;
         cursor: pointer;
-        transition:
-          transform 0.3s ease,
-          opacity 0.3s;
+        transition: transform 0.3s ease;
         position: relative;
-        user-select: none;
-        filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.1));
-      }
-
-      .hiding-spot:hover {
-        transform: scale(1.1) translateY(-5px);
       }
 
       .hiding-spot.shaking {
-        animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        animation: shake 0.5s both;
         color: #ccc;
-        /* Fade out slightly to show checked */
-        cursor: default;
+      }
+      .hiding-spot.revealed {
+        animation: popOpen 0.5s forwards;
       }
 
-      .hiding-spot.revealed {
-        animation: popOpen 0.5s ease forwards;
-        pointer-events: none;
+      @keyframes popOpen {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(0);
+          opacity: 0;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .hidden-heart-popup {
@@ -544,7 +416,6 @@
         transform: translate(-50%, -50%) scale(0);
         font-size: 2rem;
         color: #ff0000;
-        pointer-events: none;
         z-index: 20;
       }
 
@@ -552,75 +423,100 @@
         animation: popHeart 1s ease forwards;
       }
 
-      @keyframes shake {
-        10%,
-        90% {
-          transform: translate3d(-1px, 0, 0);
-        }
-
-        20%,
-        80% {
-          transform: translate3d(2px, 0, 0);
-        }
-
-        30%,
-        50%,
-        70% {
-          transform: translate3d(-4px, 0, 0);
-        }
-
-        40%,
-        60% {
-          transform: translate3d(4px, 0, 0);
-        }
-      }
-
-      @keyframes popOpen {
-        0% {
-          transform: scale(1);
-          opacity: 1;
-        }
-
-        50% {
-          transform: scale(1.2);
-          opacity: 0.8;
-        }
-
-        100% {
-          transform: scale(0);
-          opacity: 0;
-        }
-      }
-
       @keyframes popHeart {
         0% {
           transform: translate(-50%, -50%) scale(0);
           opacity: 0;
         }
-
         50% {
           transform: translate(-50%, -150%) scale(2);
           opacity: 1;
         }
-
         100% {
           transform: translate(-50%, -300%) scale(0);
           opacity: 0;
         }
       }
 
-      /* Adjust game stage layout for grid */
-      #game-stage {
-        display: flex;
-        /* Ensure flex for centering */
+      @keyframes shake {
+        10%,
+        90% {
+          transform: translate3d(-1px, 0, 0);
+        }
+        20%,
+        80% {
+          transform: translate3d(2px, 0, 0);
+        }
+        30%,
+        50%,
+        70% {
+          transform: translate3d(-4px, 0, 0);
+        }
+        40%,
+        60% {
+          transform: translate3d(4px, 0, 0);
+        }
       }
     </style>
+  </head>
+
+  <body>
+    <div class="bg-shapes">
+      <div class="shape"></div>
+      <div class="shape"></div>
+      <div class="shape"></div>
+    </div>
+
+    <div id="game-stage">
+      <div class="instructions">
+        <h1>Find My Heart</h1>
+        <p>
+          I've hidden 3 hearts inside these gifts.<br />Click them to find where
+          my heart lies!
+        </p>
+        <div class="score-board">
+          Hearts Found: <span id="counter">0</span>/3
+        </div>
+      </div>
+      <div class="hiding-spots-container"></div>
+    </div>
+
+    <div id="envelope-stage">
+      <div class="envelope-container" id="envelope">
+        <div class="envelope">
+          <div class="pocket"></div>
+          <div class="letter-preview"></div>
+          <div class="flap"></div>
+          <div class="seal">❤️</div>
+        </div>
+      </div>
+      <button class="open-btn" onclick="openEnvelope()">Open Me</button>
+    </div>
+
+    <div id="letter-view">
+      <div class="love-letter">
+        <button class="close-btn" onclick="closeLetter()">×</button>
+        <h2>To My Beautiful Woman of God,</h2>
+        <p>
+          I thank Jesus every day for bringing you into my life. You are a
+          blessing I don't deserve, and a treasure I promise to always protect.
+        </p>
+        <p style="font-style: italic; color: #d63384">
+          "Let all that you do be done in love." — 1 Corinthians 16:14
+        </p>
+        <p>
+          I am here for you always—to lead us in faith, to cherish your heart,
+          and to love you just as Christ loves us. You are my greatest
+          adventure.
+        </p>
+        <p>Happy Valentine's Day! ❤️</p>
+        <p style="text-align: right">— Yours forever in Christ,</p>
+      </div>
+    </div>
 
     <script>
       let heartsFound = 0;
       const totalHearts = 3;
-
-      // Items to hide things in
       const hidingItems = [
         "🎁",
         "🎁",
@@ -635,25 +531,14 @@
         "🧁",
         "🌹",
       ];
-      let spots = [];
 
       window.onload = function () {
-        initGame();
-      };
-
-      function initGame() {
         const container = document.querySelector(".hiding-spots-container");
-        // Shuffle items
         hidingItems.sort(() => Math.random() - 0.5);
-
-        // Limit to maybe 12 items on screen for clean look
         const displayItems = hidingItems.slice(0, 12);
-
-        // Pick 3 random indices to hold hearts
         let heartIndices = new Set();
-        while (heartIndices.size < 3) {
+        while (heartIndices.size < 3)
           heartIndices.add(Math.floor(Math.random() * displayItems.length));
-        }
 
         displayItems.forEach((icon, index) => {
           const spot = document.createElement("div");
@@ -662,9 +547,8 @@
           spot.dataset.hasHeart = heartIndices.has(index);
           spot.onclick = () => checkSpot(spot);
           container.appendChild(spot);
-          spots.push(spot);
         });
-      }
+      };
 
       function checkSpot(element) {
         if (
@@ -672,93 +556,41 @@
           element.classList.contains("revealed")
         )
           return;
-
         if (element.dataset.hasHeart === "true") {
-          // FOUND HEART
           element.classList.add("revealed");
-
-          // Show floating heart
           const heart = document.createElement("div");
           heart.classList.add("hidden-heart-popup", "pop-anim");
           heart.innerText = "❤️";
           element.appendChild(heart);
-
-          // Sparkles at position
-          const rect = element.getBoundingClientRect();
-          createSparkles(
-            rect.left + rect.width / 2,
-            rect.top + rect.height / 2,
-          );
-
           heartsFound++;
           document.getElementById("counter").innerText = heartsFound;
-
-          if (heartsFound === totalHearts) {
-            setTimeout(revealEnvelope, 1200);
-          }
+          if (heartsFound === totalHearts) setTimeout(revealEnvelope, 1200);
         } else {
-          // EMPTY
           element.classList.add("shaking");
-          // Optional: Change emoji to empty/sad or just fade
-          // element.style.opacity = '0.5';
-        }
-      }
-
-      function createSparkles(x, y) {
-        for (let i = 0; i < 8; i++) {
-          const sparkle = document.createElement("div");
-          sparkle.classList.add("sparkle");
-          sparkle.innerText = "✨";
-          sparkle.style.left = x + (Math.random() * 40 - 20) + "px";
-          sparkle.style.top = y + (Math.random() * 40 - 20) + "px";
-          document.body.appendChild(sparkle);
-          setTimeout(() => sparkle.remove(), 800);
         }
       }
 
       function revealEnvelope() {
-        const gameStage = document.getElementById("game-stage");
-        const envelopeStage = document.getElementById("envelope-stage");
-
-        gameStage.classList.add("hidden");
-
+        document.getElementById("game-stage").classList.add("hidden");
         setTimeout(() => {
-          gameStage.style.display = "none";
-          envelopeStage.style.display = "flex";
-          void envelopeStage.offsetWidth;
-          envelopeStage.classList.add("visible");
+          document.getElementById("game-stage").style.display = "none";
+          const stage = document.getElementById("envelope-stage");
+          stage.style.display = "flex";
+          void stage.offsetWidth;
+          stage.classList.add("visible");
         }, 1000);
       }
 
       function openEnvelope() {
-        const envContainer = document.getElementById("envelope");
-        const letterView = document.getElementById("letter-view");
-        envContainer.classList.add("open");
-        setTimeout(() => {
-          letterView.classList.add("active");
-          createConfetti();
-        }, 1500);
+        document.getElementById("envelope").classList.add("open");
+        setTimeout(
+          () => document.getElementById("letter-view").classList.add("active"),
+          1500,
+        );
       }
 
       function closeLetter() {
         document.getElementById("letter-view").classList.remove("active");
-      }
-
-      function createConfetti() {
-        const colors = ["#ff4d6d", "#ff8fa3", "#fff", "#gold"];
-        for (let i = 0; i < 50; i++) {
-          const conf = document.createElement("div");
-          conf.style.position = "fixed";
-          conf.style.left = Math.random() * 100 + "vw";
-          conf.style.top = -10 + "px";
-          conf.style.width = "10px";
-          conf.style.height = "10px";
-          conf.style.backgroundColor =
-            colors[Math.floor(Math.random() * colors.length)];
-          conf.style.animation = `float ${Math.random() * 3 + 2}s linear forwards`;
-          document.body.appendChild(conf);
-          setTimeout(() => conf.remove(), 5000);
-        }
       }
     </script>
   </body>
